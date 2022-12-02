@@ -108,6 +108,6 @@ mod tests {
     fn test_day1_2_input() {
         let inventory =  read_file_as_vec("src/input/day01.txt".to_string());
         let res = sort_by_most_calories(inventory);
-        assert_eq!(0, res);
+        assert_eq!(213159, res);
     }
 }
