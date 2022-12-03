@@ -6,15 +6,16 @@ use std::time::{Duration, Instant};
 mod helpers;
 mod day01;
 mod day02;
+mod day03;
 
 
 fn main() {
     let now = Instant::now();
-    println!("Part - 1 : {:?}", day02::part_1());
+    println!("Part - 1 : {:?}", day03::part_1());
     println!("{}", now.elapsed().as_millis());
 
     let now2 = Instant::now();
-    println!("Part - 2 : {:?}", day02::part_2());
+    println!("Part - 2 : {:?}", day03::part_2());
     println!("{}", now2.elapsed().as_millis());
 }
 
