@@ -4,6 +4,7 @@ use std::fs::File;
 use std::ops::Index;
 use std::result::Result;
 use std::string::ToString;
+use itertools::Itertools;
 
 use crate::helpers;
 
@@ -42,9 +43,15 @@ fn get_item_value(c: char) -> i64 {
 // ____________________
 
 pub fn part_2() -> i64 {
-    let _inventory = helpers::read(File::open("src/input/day03.txt").unwrap()).unwrap();
-    let res = 0;
+    let inventory = helpers::read(File::open("src/input/day03.txt").unwrap()).unwrap();
+    let res = inventory.into_iter().tuples::<(_, _, _)>().map(|group| get_item_value(find_common_item(group)))
+        .reduce(|a, e| a + e)
+        .unwrap();
     return res;
+}
+
+fn find_common_item((first, second, third): (String, String, String)) -> char {
+    first.chars().find(|&c| second.contains(c) && third.contains(c)).unwrap()
 }
 
 #[cfg(test)]
@@ -94,13 +101,28 @@ mod tests {
     // ____________________
 
     #[test]
-    fn test_day3_2_sort_by_most_calories() {
-        assert_eq!(0, 0);
+    fn test_day3_2_find_common_item() {
+        assert_eq!('c', find_common_item(("abc".to_string(), "Abc".to_string(), "ABc".to_string())));
+    }
+
+    #[test]
+    fn test_day3_2_sample() {
+        let res = vec![
+            "vJrwpWtwJgWrhcsFMMfFFhFp".to_string(),
+            "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL".to_string(),
+            "PmmdzqPrVvPwwTWBwg".to_string(),
+            "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn".to_string(),
+            "ttgJtRGJQctTZtZT".to_string(),
+            "CrZsJsPPZsGzwwsLwLmpwMDw".to_string(),
+        ].into_iter().tuples::<(_, _, _)>().map(|group| get_item_value(find_common_item(group)))
+            .reduce(|a, e| a + e)
+            .unwrap();
+        assert_eq!(70, res);
     }
 
     #[test]
     fn test_day3_2_input() {
         let res = part_2();
-        assert_eq!(0, res);
+        assert_eq!(2434, res);
     }
 }
