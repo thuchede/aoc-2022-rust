@@ -1,9 +1,9 @@
 #![allow(dead_code)]
 
+use regex::Regex;
 use std::fs::File;
 use std::result::Result;
 use std::str::FromStr;
-use regex::Regex;
 
 use crate::helpers;
 
@@ -13,8 +13,12 @@ use crate::helpers;
 
 pub fn part_1() -> i64 {
     let inventory = helpers::read(File::open("src/input/day02.txt").unwrap()).unwrap();
-    let res = inventory.into_iter().map(|strategy| get_point(parse_strategy(strategy))).reduce(|acc, el| acc+el).unwrap();
-    return res
+    let res = inventory
+        .into_iter()
+        .map(|strategy| get_point(parse_strategy(strategy)))
+        .reduce(|acc, el| acc + el)
+        .unwrap();
+    return res;
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -48,7 +52,7 @@ fn parse_strategy(line: String) -> (Move, Move) {
     return (opponent_move, strategy_move);
 }
 
-fn get_point(compare:(Move, Move)) -> i64 {
+fn get_point(compare: (Move, Move)) -> i64 {
     let res = match compare.clone() {
         (a, b) if a == b => 3,
         (Move::Rock, Move::Paper) => 6,
@@ -59,19 +63,61 @@ fn get_point(compare:(Move, Move)) -> i64 {
         (Move::Scissors, Move::Paper) => 0,
         _ => unreachable!(),
     };
-    return res + compare.1 as i64
+    return res + compare.1 as i64;
 }
 
 // ____________________
 // Part 2
 // ____________________
 
+#[derive(Debug, PartialEq, Clone)]
+enum Outcome {
+    Win,
+    Lose,
+    Tie,
+}
+
+impl FromStr for Outcome {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<Outcome, Self::Err> {
+        match input {
+            "X" => Ok(Outcome::Lose),
+            "Y" => Ok(Outcome::Tie),
+            "Z" => Ok(Outcome::Win),
+            _ => Err(()),
+        }
+    }
+}
+
+fn parse_strategy_outcome(line: String) -> (Move, Outcome) {
+    let re = Regex::new(r"([ABC]) ([XYZ])").unwrap();
+    let groups = re.captures(&line).unwrap();
+    let opponent_move = Move::from_str(groups.get(1).unwrap().as_str()).unwrap();
+    let strategy_outcome = Outcome::from_str(groups.get(2).unwrap().as_str()).unwrap();
+    return (opponent_move, strategy_outcome);
+}
+
+fn get_point_outcome((opponent_move, outcome): (Move, Outcome)) -> i64 {
+    let res = match outcome {
+        Outcome::Lose => 0 + (opponent_move as i64 + 1) % 3 + 1,
+        Outcome::Tie => 3 + opponent_move as i64,
+        // Outcome::Win => 6 + (opponent_move as i64 -4)%3+3,
+        Outcome::Win => 6 + (opponent_move as i64 % 3 + 1),
+        _ => unreachable!(),
+    };
+    return res;
+}
 
 pub fn part_2() -> i64 {
     let inventory = helpers::read(File::open("src/input/day02.txt").unwrap()).unwrap();
-    return 0
+    let res = inventory
+        .into_iter()
+        .map(|strategy| get_point_outcome(parse_strategy_outcome(strategy)))
+        .reduce(|acc, el| acc + el)
+        .unwrap();
+    return res;
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -96,9 +142,8 @@ mod tests {
 
     #[test]
     fn test_day2_1_input() {
-        let _inventory = helpers::read(File::open("src/input/day02.txt").unwrap()).unwrap();
-        let res = 0;
-        assert_eq!(75622, res);
+        let res = part_1();
+        assert_eq!(11666, res);
     }
 
     // ____________________
@@ -106,17 +151,23 @@ mod tests {
     // ____________________
 
     #[test]
-    fn test_day2_2_sort_by_most_calories() {
+    fn test_day2_2_parse_strategy_outcome() {
         assert_eq!(
-            0,
-            0
+            (Move::Rock, Outcome::Lose),
+            parse_strategy_outcome("A X".to_string())
         );
     }
 
     #[test]
+    fn test_day2_1_get_point_outcome() {
+        assert_eq!(4, get_point_outcome((Move::Rock, Outcome::Tie)));
+        assert_eq!(1, get_point_outcome((Move::Paper, Outcome::Lose)));
+        assert_eq!(7, get_point_outcome((Move::Scissors, Outcome::Win)));
+    }
+
+    #[test]
     fn test_day2_2_input() {
-        let _inventory = helpers::read(File::open("src/input/day02.txt").unwrap()).unwrap();
-        let res = 0;
-        assert_eq!(0, res);
+        let res = part_2();
+        assert_eq!(12767, res);
     }
 }
