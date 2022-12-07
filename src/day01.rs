@@ -30,7 +30,7 @@ fn read_file_as_vec(path: String) -> Vec<Vec<i64>> {
                 .collect::<Vec<i64>>()
         })
         .collect::<Vec<Vec<i64>>>();
-    return inventory
+    return inventory;
 }
 
 fn get_calories(rations: &Vec<i64>) -> i64 {
@@ -45,15 +45,20 @@ fn get_most_calories(inventory: Vec<Vec<i64>>) -> i64 {
 // Part 2
 // ____________________
 
-
 fn sort_by_most_calories(inventory: Vec<Vec<i64>>) -> i64 {
-    let mut total_calories = inventory.iter().map(|elf| get_calories(elf)).collect::<Vec<i64>>();
+    let mut total_calories = inventory
+        .iter()
+        .map(|elf| get_calories(elf))
+        .collect::<Vec<i64>>();
     total_calories.sort();
     total_calories.reverse();
-    let result = total_calories.into_iter().take(3).reduce(|x,y|x+y).unwrap();
-    return result
+    let result = total_calories
+        .into_iter()
+        .take(3)
+        .reduce(|x, y| x + y)
+        .unwrap();
+    return result;
 }
-
 
 pub fn part_2() -> i64 {
     let inventory = read_file_as_vec("src/input/day01.txt".to_string());
@@ -87,7 +92,7 @@ mod tests {
 
     #[test]
     fn test_day1_1_input() {
-        let inventory =  read_file_as_vec("src/input/day01.txt".to_string());
+        let inventory = read_file_as_vec("src/input/day01.txt".to_string());
         let res = get_most_calories(inventory);
         assert_eq!(75622, res);
     }
@@ -106,7 +111,7 @@ mod tests {
 
     #[test]
     fn test_day1_2_input() {
-        let inventory =  read_file_as_vec("src/input/day01.txt".to_string());
+        let inventory = read_file_as_vec("src/input/day01.txt".to_string());
         let res = sort_by_most_calories(inventory);
         assert_eq!(213159, res);
     }

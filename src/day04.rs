@@ -59,7 +59,8 @@ pub fn part_2() -> i64 {
 fn is_overlapping_partial(
     ((first_start, first_end), (second_start, second_end)): ((i64, i64), (i64, i64)),
 ) -> bool {
-    second_start <= first_end && second_end >= first_start || first_start <= second_end && first_end >= second_start
+    second_start <= first_end && second_end >= first_start
+        || first_start <= second_end && first_end >= second_start
 }
 
 #[cfg(test)]
@@ -93,7 +94,6 @@ mod tests {
     // ____________________
     // Part 2
     // ____________________
-
 
     #[test]
     fn test_day1_1_is_overlapping_partial() {

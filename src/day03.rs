@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 
+use itertools::Itertools;
 use std::fs::File;
 use std::ops::Index;
 use std::result::Result;
 use std::string::ToString;
-use itertools::Itertools;
 
 use crate::helpers;
 
@@ -44,14 +44,20 @@ fn get_item_value(c: char) -> i64 {
 
 pub fn part_2() -> i64 {
     let inventory = helpers::read(File::open("src/input/day03.txt").unwrap()).unwrap();
-    let res = inventory.into_iter().tuples::<(_, _, _)>().map(|group| get_item_value(find_common_item(group)))
+    let res = inventory
+        .into_iter()
+        .tuples::<(_, _, _)>()
+        .map(|group| get_item_value(find_common_item(group)))
         .reduce(|a, e| a + e)
         .unwrap();
     return res;
 }
 
 fn find_common_item((first, second, third): (String, String, String)) -> char {
-    first.chars().find(|&c| second.contains(c) && third.contains(c)).unwrap()
+    first
+        .chars()
+        .find(|&c| second.contains(c) && third.contains(c))
+        .unwrap()
 }
 
 #[cfg(test)]
@@ -102,7 +108,10 @@ mod tests {
 
     #[test]
     fn test_day3_2_find_common_item() {
-        assert_eq!('c', find_common_item(("abc".to_string(), "Abc".to_string(), "ABc".to_string())));
+        assert_eq!(
+            'c',
+            find_common_item(("abc".to_string(), "Abc".to_string(), "ABc".to_string()))
+        );
     }
 
     #[test]
@@ -114,9 +123,12 @@ mod tests {
             "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn".to_string(),
             "ttgJtRGJQctTZtZT".to_string(),
             "CrZsJsPPZsGzwwsLwLmpwMDw".to_string(),
-        ].into_iter().tuples::<(_, _, _)>().map(|group| get_item_value(find_common_item(group)))
-            .reduce(|a, e| a + e)
-            .unwrap();
+        ]
+        .into_iter()
+        .tuples::<(_, _, _)>()
+        .map(|group| get_item_value(find_common_item(group)))
+        .reduce(|a, e| a + e)
+        .unwrap();
         assert_eq!(70, res);
     }
 
